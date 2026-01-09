@@ -1,36 +1,106 @@
 package com.italkit.italkit.services;
 
-import com.italkit.italkit.models.UserModel;
-import com.italkit.italkit.repositories.UserRepo;
+import com.italkit.italkit.models.User;
+import com.italkit.italkit.repositories.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
-    private final UserRepo userRepo;
 
-    public UserService(UserRepo userRepo) {
-        this.userRepo = userRepo;
+    private final UserRepository userRepository;
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
-    //get All users from the Database
-    public List<UserModel> getUsers(){
-        return userRepo.findAll();
+    public User getUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
     }
 
-    //This is when we register a new user
-    public UserModel addUser(UserModel user){
-        return userRepo.save(user);
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
     }
 
-    public Optional<UserModel> findUserById(Integer id){
-        return userRepo.findById(id);
+    public User createUser(User user) {
+        if (userRepository.existsByUsername(user.getUsername())) {
+            throw new RuntimeException("Username already exists");
+        }
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new RuntimeException("Email already exists");
+        }
+        return userRepository.save(user);
     }
 
-    public void deleteUser(Integer user_id){
-        userRepo.deleteById(user_id);
+    public User updateUser(Long id, User userDetails) {
+        User user = getUserById(id);
+
+        if (userDetails.getUsername() != null && !userDetails.getUsername().equals(user.getUsername())) {
+            if (userRepository.existsByUsername(userDetails.getUsername())) {
+                throw new RuntimeException("Username already exists");
+            }
+            user.setUsername(userDetails.getUsername());
+        }
+
+        if (userDetails.getEmail() != null) {
+            user.setEmail(userDetails.getEmail());
+        }
+        if (userDetails.getBio() != null) {
+            user.setBio(userDetails.getBio());
+        }
+        if (userDetails.getProfilePicture() != null) {
+            user.setProfilePicture(userDetails.getProfilePicture());
+        }
+
+        return userRepository.save(user);
     }
 
+    public void deleteUser(Long id) {
+        User user = getUserById(id);
+        userRepository.delete(user);
+    }
+
+    @Transactional
+    public User followUser(Long followerId, Long followingId) {
+        if (followerId.equals(followingId)) {
+            throw new RuntimeException("Cannot follow yourself");
+        }
+
+        User follower = getUserById(followerId);
+        User following = getUserById(followingId);
+
+        follower.getFollowing().add(following);
+
+        return userRepository.save(follower);
+    }
+
+    @Transactional
+    public User unfollowUser(Long followerId, Long followingId) {
+        User follower = getUserById(followerId);
+        User following = getUserById(followingId);
+
+        follower.getFollowing().remove(following);
+
+        return userRepository.save(follower);
+    }
+
+    public Set<User> getFollowers(Long userId) {
+        User user = userRepository.findByIdWithFollowers(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+        return user.getFollowers();
+    }
+
+    public Set<User> getFollowing(Long userId) {
+        User user = userRepository.findByIdWithFollowing(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+        return user.getFollowing();
+    }
 }
