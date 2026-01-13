@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +27,11 @@ public class UserService {
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
     }
 
     public User createUser(User user) {
@@ -58,6 +62,23 @@ public class UserService {
         }
         if (userDetails.getProfilePicture() != null) {
             user.setProfilePicture(userDetails.getProfilePicture());
+        }
+
+        return userRepository.save(user);
+    }
+
+    @Transactional
+    public User updateUserFollowing(Long userId, List<Long> followingIds) {
+        User user = userRepository.findByIdWithFollowing(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+        // Clear existing following
+        user.getFollowing().clear();
+
+        // Add new following relationships
+        if (followingIds != null && !followingIds.isEmpty()) {
+            List<User> usersToFollow = userRepository.findByIdIn(followingIds);
+            user.getFollowing().addAll(usersToFollow);
         }
 
         return userRepository.save(user);
