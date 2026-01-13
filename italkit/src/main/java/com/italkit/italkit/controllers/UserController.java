@@ -42,6 +42,14 @@ public class UserController {
         return ResponseEntity.ok(mapUserToResponse(user));
     }
 
+    // Frontend expects: GET /api/users?email={email} for login
+    @GetMapping(params = "email")
+    public ResponseEntity<List<Map<String, Object>>> getUserByEmail(@RequestParam String email) {
+        User user = userService.getUserByEmail(email);
+        List<Map<String, Object>> response = List.of(mapUserToResponse(user));
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping
     public ResponseEntity<Map<String, Object>> createUser(@RequestBody User user) {
         User createdUser = userService.createUser(user);
@@ -51,6 +59,16 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<Map<String, Object>> updateUser(@PathVariable Long id, @RequestBody User user) {
         User updatedUser = userService.updateUser(id, user);
+        return ResponseEntity.ok(mapUserToResponse(updatedUser));
+    }
+
+    // Update user's following list (for follow/unfollow functionality)
+    @PutMapping("/{id}/following")
+    public ResponseEntity<Map<String, Object>> updateUserFollowing(
+            @PathVariable Long id,
+            @RequestBody Map<String, List<Long>> requestBody) {
+        List<Long> followingIds = requestBody.get("following");
+        User updatedUser = userService.updateUserFollowing(id, followingIds);
         return ResponseEntity.ok(mapUserToResponse(updatedUser));
     }
 
@@ -94,18 +112,33 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    // Helper method to avoid circular references
+    // Helper method to avoid circular references and match frontend expectations
     private Map<String, Object> mapUserToResponse(User user) {
         Map<String, Object> response = new HashMap<>();
         response.put("id", user.getId());
         response.put("username", user.getUsername());
         response.put("email", user.getEmail());
-        response.put("bio", user.getBio());
-        response.put("profilePicture", user.getProfilePicture());
+        response.put("password", user.getPassword()); // Include for login verification
+        response.put("firstName", user.getUsername()); // Using username as firstName for now
+        response.put("lastName", ""); // Empty for now
+        response.put("bio", user.getBio() != null ? user.getBio() : "");
+        response.put("profilePicture", user.getProfilePicture() != null ? user.getProfilePicture() : "https://via.placeholder.com/150");
         response.put("createdAt", user.getCreatedAt());
         response.put("followersCount", user.getFollowersCount());
         response.put("followingCount", user.getFollowingCount());
         response.put("postsCount", user.getPostsCount());
+
+        // Add arrays of IDs for frontend
+        List<Long> followingIds = user.getFollowing().stream()
+                .map(User::getId)
+                .collect(Collectors.toList());
+        List<Long> followersIds = user.getFollowers().stream()
+                .map(User::getId)
+                .collect(Collectors.toList());
+
+        response.put("following", followingIds);
+        response.put("followers", followersIds);
+
         return response;
     }
 }
