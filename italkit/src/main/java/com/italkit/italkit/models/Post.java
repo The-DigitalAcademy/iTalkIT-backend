@@ -21,6 +21,7 @@ public class Post {
     @Column(nullable = false, length = 500)
     private String caption;
 
+    @Column(columnDefinition = "TEXT")
     private String imageUrl;
 
     @ManyToOne(fetch = FetchType.EAGER)
