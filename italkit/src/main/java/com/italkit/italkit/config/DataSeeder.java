@@ -21,9 +21,9 @@ public class DataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Check if data already exists
+        // Check if data already exists - THIS IS IMPORTANT WITH 'update'
         if (userRepository.count() > 0) {
-            System.out.println("Database already seeded. Skipping...");
+            System.out.println("Database already contains data. Skipping seeding...");
             return;
         }
 
@@ -92,78 +92,78 @@ public class DataSeeder implements CommandLineRunner {
 
         // Create Posts
         Post post1 = new Post();
-        post1.setContent("Just finished an amazing project! 🚀 #coding #developer");
+        post1.setCaption("Just finished an amazing project! 🚀 #coding #developer");
         post1.setUser(user1);
-        post1.setCreatedAt(LocalDateTime.now().minusHours(2));
-        post1.setLikesCount(15);
+        post1.setTimestamp(LocalDateTime.now().minusHours(2));
+        post1.setLikes(15);
         post1.setCommentsCount(3);
 
         Post post2 = new Post();
-        post2.setContent("Beautiful sunset today! Check out this design inspiration.");
+        post2.setCaption("Beautiful sunset today! Check out this design inspiration.");
         post2.setImageUrl("https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=800");
         post2.setUser(user2);
-        post2.setCreatedAt(LocalDateTime.now().minusHours(5));
-        post2.setLikesCount(42);
+        post2.setTimestamp(LocalDateTime.now().minusHours(5));
+        post2.setLikes(42);
         post2.setCommentsCount(7);
 
         Post post3 = new Post();
-        post3.setContent("New marketing campaign launching next week! Excited to share what we've been working on.");
+        post3.setCaption("New marketing campaign launching next week! Excited to share what we've been working on.");
         post3.setUser(user3);
-        post3.setCreatedAt(LocalDateTime.now().minusHours(8));
-        post3.setLikesCount(28);
+        post3.setTimestamp(LocalDateTime.now().minusHours(8));
+        post3.setLikes(28);
         post3.setCommentsCount(5);
 
         Post post4 = new Post();
-        post4.setContent("Exploring the streets of Tokyo 🇯🇵 What a city!");
+        post4.setCaption("Exploring the streets of Tokyo 🇯🇵 What a city!");
         post4.setImageUrl("https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800");
         post4.setUser(user4);
-        post4.setCreatedAt(LocalDateTime.now().minusHours(12));
-        post4.setLikesCount(89);
+        post4.setTimestamp(LocalDateTime.now().minusHours(12));
+        post4.setLikes(89);
         post4.setCommentsCount(12);
 
         Post post5 = new Post();
-        post5.setContent("Remember: consistency beats intensity. Show up every day! 💪");
+        post5.setCaption("Remember: consistency beats intensity. Show up every day! 💪");
         post5.setUser(user5);
-        post5.setCreatedAt(LocalDateTime.now().minusHours(15));
-        post5.setLikesCount(67);
+        post5.setTimestamp(LocalDateTime.now().minusHours(15));
+        post5.setLikes(67);
         post5.setCommentsCount(8);
 
         Post post6 = new Post();
-        post6.setContent("Learning a new framework today. The documentation is surprisingly good!");
+        post6.setCaption("Learning a new framework today. The documentation is surprisingly good!");
         post6.setUser(user1);
-        post6.setCreatedAt(LocalDateTime.now().minusDays(1));
-        post6.setLikesCount(34);
+        post6.setTimestamp(LocalDateTime.now().minusDays(1));
+        post6.setLikes(34);
         post6.setCommentsCount(6);
 
         Post post7 = new Post();
-        post7.setContent("Color palette inspiration for today ✨");
+        post7.setCaption("Color palette inspiration for today ✨");
         post7.setImageUrl("https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?w=800");
         post7.setUser(user2);
-        post7.setCreatedAt(LocalDateTime.now().minusDays(1).minusHours(3));
-        post7.setLikesCount(51);
+        post7.setTimestamp(LocalDateTime.now().minusDays(1).minusHours(3));
+        post7.setLikes(51);
         post7.setCommentsCount(4);
 
         Post post8 = new Post();
-        post8.setContent("Client meeting went great! Sometimes the simple solutions are the best ones.");
+        post8.setCaption("Client meeting went great! Sometimes the simple solutions are the best ones.");
         post8.setUser(user3);
-        post8.setCreatedAt(LocalDateTime.now().minusDays(2));
-        post8.setLikesCount(22);
+        post8.setTimestamp(LocalDateTime.now().minusDays(2));
+        post8.setLikes(22);
         post8.setCommentsCount(2);
 
         Post post9 = new Post();
-        post9.setContent("Mountain views never get old 🏔️");
+        post9.setCaption("Mountain views never get old 🏔️");
         post9.setImageUrl("https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800");
         post9.setUser(user4);
-        post9.setCreatedAt(LocalDateTime.now().minusDays(2).minusHours(6));
-        post9.setLikesCount(103);
+        post9.setTimestamp(LocalDateTime.now().minusDays(2).minusHours(6));
+        post9.setLikes(103);
         post9.setCommentsCount(15);
 
         Post post10 = new Post();
-        post10.setContent("Meal prep Sunday! Nutrition is 80% of the game. 🥗");
+        post10.setCaption("Meal prep Sunday! Nutrition is 80% of the game. 🥗");
         post10.setImageUrl("https://images.unsplash.com/photo-1547592180-85f173990554?w=800");
         post10.setUser(user5);
-        post10.setCreatedAt(LocalDateTime.now().minusDays(3));
-        post10.setLikesCount(76);
+        post10.setTimestamp(LocalDateTime.now().minusDays(3));
+        post10.setLikes(76);
         post10.setCommentsCount(9);
 
         postRepository.saveAll(Arrays.asList(

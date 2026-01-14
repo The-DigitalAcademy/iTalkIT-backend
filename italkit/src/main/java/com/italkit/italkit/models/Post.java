@@ -19,8 +19,9 @@ public class Post {
     private Long id;
 
     @Column(nullable = false, length = 500)
-    private String content;
+    private String caption;
 
+    @Column(columnDefinition = "TEXT")
     private String imageUrl;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -28,9 +29,9 @@ public class Post {
     private User user;
 
     @Column(nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime timestamp = LocalDateTime.now();
 
-    private int likesCount = 0;
+    private int likes = 0;
 
     private int commentsCount = 0;
 }

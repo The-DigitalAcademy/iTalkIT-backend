@@ -10,10 +10,10 @@ import java.util.List;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    List<Post> findByUserIdOrderByCreatedAtDesc(Long userId);
+    List<Post> findByUserIdOrderByTimestampDesc(Long id);  // Updated method name
 
-    @Query("SELECT p FROM Post p WHERE p.user.id IN :userIds ORDER BY p.createdAt DESC")
-    List<Post> findByUserIdInOrderByCreatedAtDesc(List<Long> userIds);
+    @Query("SELECT p FROM Post p WHERE p.user.id IN :id ORDER BY p.timestamp DESC")  // Updated field name
+    List<Post> findByUserIdInOrderByTimestampDesc(List<Long> id);
 
-    List<Post> findAllByOrderByCreatedAtDesc();
+    List<Post> findAllByOrderByTimestampDesc();  // Updated method name
 }

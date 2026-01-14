@@ -35,8 +35,9 @@ public class PostController {
         return ResponseEntity.ok(mapPostToResponse(post));
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Map<String, Object>>> getPostsByUserId(@PathVariable Long userId) {
+    // Frontend expects: GET /api/posts?userId={userId}
+    @GetMapping(params = "userId")
+    public ResponseEntity<List<Map<String, Object>>> getPostsByUserId(@RequestParam Long userId) {
         List<Post> posts = postService.getPostsByUserId(userId);
         List<Map<String, Object>> response = posts.stream()
                 .map(this::mapPostToResponse)
@@ -53,8 +54,17 @@ public class PostController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/user/{userId}")
-    public ResponseEntity<Map<String, Object>> createPost(@PathVariable Long userId, @RequestBody Post post) {
+    // Frontend expects: POST /api/posts with userId in the body
+    @PostMapping
+    public ResponseEntity<Map<String, Object>> createPost(@RequestBody Map<String, Object> requestBody) {
+        Long userId = Long.valueOf(requestBody.get("userId").toString());
+        String caption = (String) requestBody.get("caption");
+        String imageUrl = (String) requestBody.get("imageUrl");
+
+        Post post = new Post();
+        post.setCaption(caption);
+        post.setImageUrl(imageUrl);
+
         Post createdPost = postService.createPost(userId, post);
         return ResponseEntity.status(HttpStatus.CREATED).body(mapPostToResponse(createdPost));
     }
@@ -83,22 +93,16 @@ public class PostController {
         return ResponseEntity.ok(mapPostToResponse(post));
     }
 
-    // Helper method to avoid circular references
+    // Updated to match frontend expectations
     private Map<String, Object> mapPostToResponse(Post post) {
         Map<String, Object> response = new HashMap<>();
         response.put("id", post.getId());
-        response.put("content", post.getContent());
+        response.put("userId", post.getUser().getId());  // Add userId at top level
+        response.put("caption", post.getCaption());  // Changed from 'content'
         response.put("imageUrl", post.getImageUrl());
-        response.put("createdAt", post.getCreatedAt());
-        response.put("likesCount", post.getLikesCount());
-        response.put("commentsCount", post.getCommentsCount());
-
-        // User info without circular references
-        Map<String, Object> userInfo = new HashMap<>();
-        userInfo.put("id", post.getUser().getId());
-        userInfo.put("username", post.getUser().getUsername());
-        userInfo.put("profilePicture", post.getUser().getProfilePicture());
-        response.put("user", userInfo);
+        response.put("timestamp", post.getTimestamp().toString());  // Changed from 'createdAt'
+        response.put("likes", post.getLikes());  // Changed from 'likesCount'
+        response.put("comments", List.of());  // Empty array for now
 
         return response;
     }
