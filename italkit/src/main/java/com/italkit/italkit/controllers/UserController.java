@@ -122,7 +122,7 @@ public class UserController {
         response.put("firstName", user.getUsername()); // Using username as firstName for now
         response.put("lastName", ""); // Empty for now
         response.put("bio", user.getBio() != null ? user.getBio() : "");
-        response.put("profilePicture", user.getProfilePicture() != null ? user.getProfilePicture() : "https://via.placeholder.com/150");
+        response.put("profilePicture", user.getProfilePicture() != null ? user.getProfilePicture() : "https://plus.unsplash.com/premium_photo-1673344310388-3510b264bfc4?q=80&w=927&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
         response.put("createdAt", user.getCreatedAt());
         response.put("followersCount", user.getFollowersCount());
         response.put("followingCount", user.getFollowingCount());
